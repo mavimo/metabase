@@ -1,8 +1,11 @@
 (ns metabase.query-processor.permissions
   "Logic related to whether a given user has permissions to run/edit a given query."
-  (:require [metabase.db :as db]))
+  (:require [clojure.tools.logging :as log]
+            [honeysql.core :as hsql]
+            (metabase [db :as db]
+                      [util :as u])))
 
-(defn user-has-native-query-write-access?
+(defn- user-has-native-query-write-access?
   "Does User with USER-ID have appropriate permissions to *edit* or *delete* a *native* query against database with DATABASE-ID?
    (Users can always *run* existing native queries.)"
   [user-id database-id]
@@ -16,7 +19,7 @@
                                             [:= :dp.native_query_write_access true]]
                            :limit     1}))))
 
-(defn user-can-run-query-referencing-table?
+(defn- user-can-run-query-referencing-table?
   "Does User with USER-ID have appropriate permissions to run an MBQL query referencing table with TABLE-ID?"
   [user-id table-id]
   {:pre [(integer? user-id) (integer? table-id)]}
@@ -35,3 +38,29 @@
                                                  [:= :sp.unrestricted_table_access true]
                                                  [:= :tp.table_id :t.id]]]
                            :limit     1}))))
+
+
+(defn- table-id [source-or-join-table]
+  (or (:id source-or-join-table)
+      (:table-id source-or-join-table)))
+
+(defn- table-identifier ^String [source-or-join-table]
+  (name (hsql/qualify (:schema source-or-join-table) (or (:name source-or-join-table)
+                                                         (:table-name source-or-join-table)))))
+
+
+(defn- throw-exception-if-user-cannot-run-query-referencing-table [user-id table]
+  (log/debug (u/format-color 'yellow  "Permissions Check 🔐 : Can User %d access Table %d (%s)?" user-id (table-id table) (table-identifier table)))
+  (when-not (user-can-run-query-referencing-table? user-id (table-id table))
+    (log/error (u/format-color 'red "Permissions Check 🔐 : No 🚫"))
+    (throw (Exception. (format "You do not have permissions to run queries referencing table '%s'." (table-identifier table)))))
+  (log/debug (u/format-color 'green "Permissions Check 🔓 : Yes ✅")))
+
+(defn check-query-permissions
+  "Check that User with USER-ID has permissions to run QUERY, or throw an exception."
+  [user-id {query-type :type, {:keys [source-table join-tables]} :query}]
+  ;; TODO - handle checking for native queries that aren't part of existing cards
+  (when-not (= (keyword query-type) :native)
+    ;; check that we can run against the source-table. and each of the join-tables, if any
+    (doseq [table (cons source-table join-tables)]
+      (throw-exception-if-user-cannot-run-query-referencing-table user-id table))))
