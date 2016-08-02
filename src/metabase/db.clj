@@ -368,6 +368,8 @@
   (jdbc/query (db-connection) (honeysql->sql honeysql-form) options))
 
 
+;; TODO - wouldn't it be *pretty cool* if we just made entities implement the honeysql.format/ToSql protocol so we didn't need this function?
+;;        That would however mean we would have to make sure the entities are resolved first
 (defn entity->table-name
   "Get the keyword table name associated with an ENTITY, which can be anything that can be passed to `resolve-entity`.
 
