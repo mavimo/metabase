@@ -5,21 +5,24 @@
 
 (i/defentity PermissionsGroup :permissions_group)
 
-(defn- pre-cascade-delete [{group-name :name, id :id}]
+(defn- throw-exception-when-editing-magic-group
+  "Make sure we're not trying to edit/delete one of the magic groups, or throw an exception."
+  [{group-name :name}]
   {:pre [(string? group-name)]}
-  ;; make sure we're not trying to delete one of the magic groups
   (when (= group-name "Default")
     (throw (Exception. "You cannot delete the 'Default' permissions group!")))
   (when (= group-name "Admin")
-    (throw (Exception. "You cannot delete the 'Admin' permissions group!")))
-  ;; ok, we're clear; now delete related objects
+    (throw (Exception. "You cannot delete the 'Admin' permissions group!"))))
+
+(defn- pre-cascade-delete [{id :id, :as group}]
+  (throw-exception-when-editing-magic-group )
   (db/cascade-delete! 'DatabasePermissions        :group_id id)
   (db/cascade-delete! 'TablePermissions           :group_id id)
   (db/cascade-delete! 'SchemaPermissions          :group_id id)
   (db/cascade-delete! 'PermissionsGroupMembership :group_id id))
 
-(defn- pre-update [group]
-  ;; TODO - make sure we're not trying to update one of the magic groups
+(defn- pre-update [{id :id, :as group}]
+  (throw-exception-when-editing-magic-group group)
   group)
 
 (u/strict-extend (class PermissionsGroup)

@@ -16,3 +16,8 @@
 ;; make sure we're not allowed to delete the magic groups
 (expect Exception (db/cascade-delete! 'PermissionsGroup :id (:id (perm-group/default))))
 (expect Exception (db/cascade-delete! 'PermissionsGroup :id (:id (perm-group/admin))))
+
+
+;; make sure we're not allowed to edit the magic groups
+(expect Exception (db/update! 'PermissionsGroup (:id (perm-group/default)) :name "Cool People"))
+(expect Exception (db/update! 'PermissionsGroup (:id (perm-group/admin))   :name "Cool People"))
