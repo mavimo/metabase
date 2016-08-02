@@ -111,14 +111,14 @@ databaseChangeLog:
                   remarks: "Is this group allowed to access any schema in the database? (As opposed to having access to only a whitelisted subset of schemas.)"
                   constraints:
                     nullable: false
-                    defaultValueBoolean: true
+                  defaultValueBoolean: true
               - column:
                   name: native_query_write_access
                   type: boolean
                   remarks: "Does this group have permission to create/edit native queries? (Groups can run existing native queries created by others if they have permissions for the source database.)"
                   constraints:
                     nullable: false
-                    defaultValueBoolean: true
+                  defaultValueBoolean: true
         - addUniqueConstraint:
             tableName: database_permissions
             columnNames: group_id, database_id
@@ -182,7 +182,7 @@ databaseChangeLog:
                   remarks: "Is this group allowed to access any table belonging to this schema? (As opposed to only having access to a whitelisted subset of tables.)"
                   constraints:
                     nullable: false
-                    defaultValueBoolean: true
+                  defaultValueBoolean: true
         - addUniqueConstraint:
             tableName: schema_permissions
             columnNames: group_id, database_id, schema
