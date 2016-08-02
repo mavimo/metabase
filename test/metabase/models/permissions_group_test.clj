@@ -1,7 +1,10 @@
 (ns metabase.models.permissions-group-test
   (:require [expectations :refer :all]
             [metabase.db :as db]
-            (metabase.models [permissions-group :as perm-group]
+            (metabase.models [database :refer [Database]]
+                             [database-permissions :refer [DatabasePermissions]]
+                             [permissions-group :as perm-group]
+                             [table :refer [Table]]
                              [user :refer [User]])
             [metabase.test.util :as tu])
   (:import metabase.models.permissions_group.PermissionsGroupInstance))
@@ -49,3 +52,21 @@
     (db/exists? 'PermissionsGroupMembership
                 :user_id  user-id
                 :group_id (:id (perm-group/admin)))))
+
+
+;;; newly created databases should get added to the appropriate magic groups
+(expect
+  #metabase.models.database_permissions.DatabasePermissionsInstance{:unrestricted_schema_access true
+                                                                    :native_query_write_access  true}
+  (tu/with-temp Database [{database-id :id}]
+    (db/select-one [DatabasePermissions :unrestricted_schema_access :native_query_write_access]
+      :group_id    (:id (perm-group/default))
+      :database_id database-id)))
+
+(expect
+  #metabase.models.database_permissions.DatabasePermissionsInstance{:unrestricted_schema_access true
+                                                                    :native_query_write_access  true}
+  (tu/with-temp Database [{database-id :id}]
+    (db/select-one [DatabasePermissions :unrestricted_schema_access :native_query_write_access]
+      :group_id    (:id (perm-group/admin))
+      :database_id database-id)))

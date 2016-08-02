@@ -2,14 +2,25 @@
   (:require [cheshire.generate :refer [add-encoder encode-map]]
             [metabase.api.common :refer [*current-user*]]
             [metabase.db :as db]
-            [metabase.models.interface :as i]
+            (metabase.models [interface :as i]
+                             [permissions-group :as perm-group])
             [metabase.util :as u]))
 
 (def ^:const protected-password
   "The string to replace passwords with when serializing Databases."
   "**MetabasePass**")
 
+
 (i/defentity Database :metabase_database)
+
+(defn- post-insert [{id :id, :as database}]
+  (u/prog1 database
+    ;; add this database to the magic permissions groups
+    (doseq [group [(perm-group/admin)
+                   (perm-group/default)]]
+      (db/insert! 'DatabasePermissions
+        :database_id id
+        :group_id    (:id group)))))
 
 (defn- post-select [{:keys [engine] :as database}]
   (if-not engine database
@@ -24,11 +35,6 @@
   (db/cascade-delete! 'Table               :db_id       id)
   (db/cascade-delete! 'RawTable            :database_id id))
 
-(defn ^:hydrate tables
-  "Return the `Tables` associated with this `Database`."
-  [{:keys [id]}]
-  (db/select 'Table, :db_id id, :active true, {:order-by [[:display_name :asc]]}))
-
 (u/strict-extend (class Database)
   i/IEntity
   (merge i/IEntityDefaults
@@ -37,8 +43,15 @@
           :timestamped?       (constantly true)
           :can-read?          (constantly true)
           :can-write?         i/superuser?
+          :post-insert        post-insert
           :post-select        post-select
           :pre-cascade-delete pre-cascade-delete}))
+
+
+(defn ^:hydrate tables
+  "Return the `Tables` associated with this `Database`."
+  [{:keys [id]}]
+  (db/select 'Table, :db_id id, :active true, {:order-by [[:display_name :asc]]}))
 
 
 (add-encoder DatabaseInstance (fn [db json-generator]

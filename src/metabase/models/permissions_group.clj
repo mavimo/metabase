@@ -15,7 +15,7 @@
     (throw (Exception. "You cannot delete the 'Admin' permissions group!"))))
 
 (defn- pre-cascade-delete [{id :id, :as group}]
-  (throw-exception-when-editing-magic-group )
+  (throw-exception-when-editing-magic-group group)
   (db/cascade-delete! 'DatabasePermissions        :group_id id)
   (db/cascade-delete! 'TablePermissions           :group_id id)
   (db/cascade-delete! 'SchemaPermissions          :group_id id)
