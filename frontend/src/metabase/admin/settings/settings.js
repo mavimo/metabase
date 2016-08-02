@@ -29,7 +29,7 @@ export const initializeSettings = createThunkAction("INITIALIZE_SETTINGS", funct
             return {
                 settings,
                 refreshSiteSettings
-            }
+            };
         } catch(error) {
             console.log("error fetching settings", error);
             throw error;

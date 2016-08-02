@@ -40,7 +40,7 @@ export default class Navbar extends Component {
     }
 
     renderAdminNav() {
-        let renderItem = (function(name, isActiveURL, href) {
+        const renderItem = (function(name, isActiveURL, href) {
             return (
                 <li>
                     <a data-metabase-event={"Navbar;" + name} className={cx("NavItem py1 px2 no-decoration", {"is--selected": this.isActive(isActiveURL)})} href={href}>

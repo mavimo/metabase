@@ -31,6 +31,7 @@ import SegmentApp from "metabase/admin/datamodel/containers/SegmentApp.jsx";
 import RevisionHistoryApp from "metabase/admin/datamodel/containers/RevisionHistoryApp.jsx";
 import AdminPeopleApp from "metabase/admin/people/containers/AdminPeopleApp.jsx";
 import SettingsEditorApp from "metabase/admin/settings/containers/SettingsEditorApp.jsx";
+import AdminPermissionsApp from "metabase/admin/permissions/containers/AdminPermissionsApp.jsx";
 
 import NotFound from "metabase/components/NotFound.jsx";
 import Unauthorized from "metabase/components/Unauthorized.jsx";
@@ -76,6 +77,7 @@ export default class Routes extends Component {
                     </Route>
 
                     <Route path="people" component={this._forwardProps(AdminPeopleApp, ["onChangeLocation"])} />
+                    <Route path="permissions" component={this._forwardProps(AdminPermissionsApp, ["onChangeLocation"])} />
                     <Route path="settings" component={this._forwardProps(SettingsEditorApp, ["refreshSiteSettings"])} />
                 </Route>
 

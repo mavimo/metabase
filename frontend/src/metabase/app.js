@@ -142,6 +142,7 @@ angular.module('metabase', [
     $routeProvider.when('/admin/datamodel/segment/:segmentId', route);
     $routeProvider.when('/admin/datamodel/:objectType/:objectId/revisions', route);
     $routeProvider.when('/admin/people/', route);
+    $routeProvider.when('/admin/permissions/', { ...route, className: "full-height" });
     $routeProvider.when('/admin/settings/', { ...route, className: "full-height" });
 
     $routeProvider.when('/reference', route);
