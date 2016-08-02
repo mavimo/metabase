@@ -40,7 +40,15 @@ export default class Navbar extends Component {
     }
 
     renderAdminNav() {
-        const classes = "NavItem py1 px2 no-decoration";
+        let renderItem = (function(name, isActiveURL, href) {
+            return (
+                <li>
+                    <a data-metabase-event={"Navbar;" + name} className={cx("NavItem py1 px2 no-decoration", {"is--selected": this.isActive(isActiveURL)})} href={href}>
+                        {name}
+                    </a>
+                </li>
+            );
+        }).bind(this);
 
         return (
             <nav className="AdminNav">
@@ -51,26 +59,11 @@ export default class Navbar extends Component {
                     </div>
 
                     <ul className="sm-ml4 flex flex-full">
-                        <li>
-                            <a data-metabase-event={"Navbar;Settings"} className={cx(classes, {"is--selected": this.isActive("/admin/settings")})}  href="/admin/settings/">
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;People"} className={cx(classes, {"is--selected": this.isActive("/admin/people")})} href="/admin/people/">
-                                People
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;Data Model"} className={cx(classes, {"is--selected": this.isActive("/admin/datamodel")})} href="/admin/datamodel/database">
-                                Data Model
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;Databases"} className={cx(classes, {"is--selected": this.isActive("/admin/databases")})} href="/admin/databases/">
-                                Databases
-                            </a>
-                        </li>
+                        {renderItem("Settings",    "/admin/settings",    "/admin/settings/")}
+                        {renderItem("People",      "/admin/people",      "/admin/people/")}
+                        {renderItem("Data Model",  "/admin/datamodel",   "/admin/datamodel/database")}
+                        {renderItem("Databases",   "/admin/databases",   "/admin/databases/")}
+                        {renderItem("Permissions", "/admin/permissions", "/admin/permissions/")}
                     </ul>
 
                     <ProfileLink {...this.props}></ProfileLink>
