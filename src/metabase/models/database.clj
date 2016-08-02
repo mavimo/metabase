@@ -18,9 +18,11 @@
                                         []))))
 
 (defn- pre-cascade-delete [{:keys [id]}]
-  (db/cascade-delete! 'Card  :database_id id)
-  (db/cascade-delete! 'Table :db_id id)
-  (db/cascade-delete! 'RawTable :database_id id))
+  (db/cascade-delete! 'Card                :database_id id)
+  (db/cascade-delete! 'DatabasePermissions :database_id id)
+  (db/cascade-delete! 'SchemaPermissions   :database_id id)
+  (db/cascade-delete! 'Table               :db_id       id)
+  (db/cascade-delete! 'RawTable            :database_id id))
 
 (defn ^:hydrate tables
   "Return the `Tables` associated with this `Database`."
