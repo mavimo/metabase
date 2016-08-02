@@ -66,7 +66,7 @@
 (expect
   (user->id :rasta)
   (let [session-id (random-session-id)]
-    (db/simple-insert! Session, :id session-id, :user_id (user->id :rasta), :created_at (u/new-sql-timestamp))
+    (db/insert! Session, :id session-id, :user_id (user->id :rasta), :created_at (u/new-sql-timestamp))
     (-> (auth-enforced-handler (request-with-session-id session-id))
         :metabase-user-id)))
 
@@ -77,7 +77,7 @@
 (expect
   response-unauthentic
   (let [session-id (random-session-id)]
-    (db/simple-insert! Session, :id session-id, :user_id (user->id :rasta), :created_at (java.sql.Timestamp. 0))
+    (db/insert! Session, :id session-id, :user_id (user->id :rasta), :created_at (java.sql.Timestamp. 0))
     (auth-enforced-handler (request-with-session-id session-id))))
 
 
@@ -87,7 +87,7 @@
 ;; NOTE that :trashbird is our INACTIVE test user
 (expect response-unauthentic
   (let [session-id (random-session-id)]
-    (db/simple-insert! Session, :id session-id, :user_id (user->id :trashbird), :created_at (u/new-sql-timestamp))
+    (db/insert! Session, :id session-id, :user_id (user->id :trashbird), :created_at (u/new-sql-timestamp))
     (auth-enforced-handler (request-with-session-id session-id))))
 
 

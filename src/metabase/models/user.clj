@@ -4,6 +4,7 @@
             [metabase.db :as db]
             [metabase.email.messages :as email]
             (metabase.models [interface :as i]
+                             [permissions-group :as perm-group]
                              [setting :as setting])
             [metabase.util :as u]))
 
@@ -12,7 +13,8 @@
 (i/defentity User :core_user)
 
 (defn- pre-insert [{:keys [email password reset_token] :as user}]
-  (assert (u/is-email? email))
+  (assert (u/is-email? email)
+    (format "Not a valid email: '%s'" email))
   (assert (and (string? password)
                (not (s/blank? password))))
   (assert (not (:password_salt user))
@@ -30,6 +32,17 @@
             :password      (creds/hash-bcrypt (str salt password))}
            (when reset_token
              {:reset_token (creds/hash-bcrypt reset_token)}))))
+
+(defn- post-insert [{user-id :id, superuser? :is_superuser, :as user}]
+  (u/prog1 user
+    ;; add the newly created user to the magic perms groups
+    (db/insert! 'PermissionsGroupMembership
+      :user_id  user-id
+      :group_id (:id (perm-group/default)))
+    (when superuser?
+      (db/insert! 'PermissionsGroupMembership
+        :user_id  user-id
+        :group_id (:id (perm-group/admin))))))
 
 (defn- pre-update [{:keys [email reset_token] :as user}]
   (when email
@@ -61,6 +74,7 @@
          {:default-fields     (constantly [:id :email :date_joined :first_name :last_name :last_login :is_superuser :is_qbnewb])
           :hydration-keys     (constantly [:author :creator :user])
           :pre-insert         pre-insert
+          :post-insert        post-insert
           :pre-update         pre-update
           :post-select        post-select
           :pre-cascade-delete pre-cascade-delete}))
