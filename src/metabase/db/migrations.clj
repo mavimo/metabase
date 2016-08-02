@@ -260,9 +260,11 @@
   (let [{default-group-id :id} (perm-group/default)
         {admin-group-id :id}   (perm-group/admin)]
     (doseq [database-id (db/select-ids Database)]
-      (db/insert! DatabasePermissions
-        :database_id database-id
-        :group_id    default-group-id)
-      (db/insert! DatabasePermissions
-        :database_id database-id
-        :group_id    admin-group-id))))
+      (u/ignore-exceptions
+        (db/insert! DatabasePermissions
+          :database_id database-id
+          :group_id    default-group-id))
+      (u/ignore-exceptions
+        (db/insert! DatabasePermissions
+          :database_id database-id
+          :group_id    admin-group-id)))))
