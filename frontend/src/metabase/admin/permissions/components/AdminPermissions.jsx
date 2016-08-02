@@ -8,15 +8,9 @@ export default class AdminPermissions extends Component {
         super(props, context);
 
         this.state = {
-            activeSection: "Groups"
+            activeSection: props.activeSection || "Groups"
         };
     }
-
-    /* componentDidMount() {
-     *     this.setState({
-     *         activeSection: "Groups"
-     *     });
-     * }*/
 
     render() {
         const renderLeftNavItem = (function(name, href) {
@@ -40,8 +34,8 @@ export default class AdminPermissions extends Component {
                 <div className="MetadataEditor-main flex flex-row flex-full mt2">
                     <div className="MetadataEditor-table-list AdminList flex-no-shrink">
                         <ul className="AdminList-items pt1">
-                            {renderLeftNavItem("Groups", "/admin/permissions/groups")}
-                            {renderLeftNavItem("Data",   "/admin/permissions/data")}
+                            {renderLeftNavItem("Groups", "/admin/permissions?section=Groups")}
+                            {renderLeftNavItem("Data",   "/admin/permissions?section=Data")}
                         </ul>
                     </div>
                 </div>

@@ -63,7 +63,7 @@ export default class Navbar extends Component {
                         {renderItem("People",      "/admin/people",      "/admin/people/")}
                         {renderItem("Data Model",  "/admin/datamodel",   "/admin/datamodel/database")}
                         {renderItem("Databases",   "/admin/databases",   "/admin/databases/")}
-                        {renderItem("Permissions", "/admin/permissions", "/admin/permissions/")}
+                        {renderItem("Permissions", "/admin/permissions", "/admin/permissions?section=Groups")}
                     </ul>
 
                     <ProfileLink {...this.props}></ProfileLink>

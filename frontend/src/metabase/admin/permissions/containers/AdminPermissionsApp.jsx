@@ -4,10 +4,11 @@ import { connect } from "react-redux";
 import AdminPermissions from "../components/AdminPermissions.jsx";
 
 const mapStateToProps = function(state, props) {
-    console.log('state ->', state);
-    console.log('props ->', props);
+    console.log('state ->', state); // NOCOMMIT
+    console.log('props ->', props); // NOCOMMIT
+    console.log('props.location.query.section ->', props.location.query.section); // NOCOMMIT
     return {
-        here: true
+        activeSection: props.location.query.section
     };
 }
 
