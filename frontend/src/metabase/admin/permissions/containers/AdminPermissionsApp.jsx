@@ -2,12 +2,11 @@ import React, { Component, PropTypes } from "react";
 import { connect } from "react-redux";
 
 import AdminPermissions from "../components/AdminPermissions.jsx";
+import { adminPermissionsSelectors } from "../selectors";
 
 const mapStateToProps = function(state, props) {
-    console.log('state ->', state); // NOCOMMIT
-    console.log('props ->', props); // NOCOMMIT
-    console.log('props.location.query.section ->', props.location.query.section); // NOCOMMIT
     return {
+        ...adminPermissionsSelectors(state),
         activeSection: props.location.query.section
     };
 }

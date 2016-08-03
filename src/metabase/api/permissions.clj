@@ -9,7 +9,7 @@
   "Fetch all `PermissionsGroups`."
   []
   (check-superuser)
-  (db/select PermissionsGroup {:order-by [:name]}))
+  (db/select PermissionsGroup {:order-by [:%lower.name]}))
 
 
 (define-routes)

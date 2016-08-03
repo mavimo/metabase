@@ -20,7 +20,7 @@ export const fetchDatabases = createThunkAction("FETCH_DATABASES", function() {
         try {
             return await MetabaseApi.db_list();
         } catch(error) {
-            console.log("error fetching databases", error);
+            console.error("error fetching databases", error);
         }
     };
 });
@@ -39,7 +39,7 @@ export const initializeDatabase = createThunkAction("INITIALIZE_DATABASE", funct
                 if (error.status == 404) {
                     //$location.path('/admin/databases/');
                 } else {
-                    console.log("error fetching database", databaseId, error);
+                    console.error("error fetching database", databaseId, error);
                 }
             }
 
@@ -66,7 +66,7 @@ export const addSampleDataset = createThunkAction("ADD_SAMPLE_DATASET", function
             MetabaseAnalytics.trackEvent("Databases", "Add Sample Data");
             return sampleDataset;
         } catch(error) {
-            console.log("error adding sample dataset", error);
+            console.error("error adding sample dataset", error);
             return error;
         }
     };
@@ -99,7 +99,7 @@ export const saveDatabase = createThunkAction("SAVE_DATABASE", function(database
 
         } catch (error) {
             //$scope.$broadcast("form:api-error", error);
-            console.log("error saving database", error);
+            console.error("error saving database", error);
             MetabaseAnalytics.trackEvent("Databases", database.id ? "Update Failed" : "Create Failed", database.engine);
             formState = { formError: error };
         }

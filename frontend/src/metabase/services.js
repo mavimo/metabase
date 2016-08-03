@@ -799,7 +799,7 @@ CoreServices.factory('Settings', ['$resource', function($resource) {
         list: {
             url: '/api/setting',
             method: 'GET',
-            isArray: true,
+            isArray: true
         },
         // POST endpoint handles create + update in this case
         put: {
@@ -821,6 +821,16 @@ CoreServices.factory('Settings', ['$resource', function($resource) {
             params: {
                 key: '@key'
             }
+        }
+    });
+}]);
+
+CoreServices.factory('Permissions', ['$resource', function($resource) {
+    return $resource('/api/permissions', {}, {
+        groups: {
+            method: 'GET',
+            url: '/api/permissions/groups',
+            isArray: true
         }
     });
 }]);
