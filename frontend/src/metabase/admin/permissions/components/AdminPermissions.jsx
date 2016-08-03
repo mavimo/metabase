@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from "react";
 
 import cx from 'classnames';
 
+import UserAvatar from "metabase/components/UserAvatar.jsx";
+
 import { fetchGroups } from "../actions";
 
 export default class AdminPermissions extends Component {
@@ -71,14 +73,21 @@ export default class AdminPermissions extends Component {
         );
     }
 
-    renderGroup(group) {
-        console.log('renderGroup(', group, ')'); // NOCOMMIT
+    renderGroup(group, index) {
+        console.log('renderGroup(', group, ",", index, ')'); // NOCOMMIT
+
+        const COLORS = ['bg-error', 'bg-purple', 'bg-brand', 'bg-gold', 'bg-green'],
+              color  = COLORS[(index % COLORS.length)]
+
         return (
             <div key={group.id} className="my4">
-                <h3>
+                <span className="text-white inline-block">
+                    <UserAvatar background={color} user={{first_name: group.name}} />
+                </span>
+                <span className="ml2 text-bold">
                     {group.name}
-                </h3>
-            </div>
+                </span>
+             </div>
         );
     }
 
@@ -86,7 +95,7 @@ export default class AdminPermissions extends Component {
         console.log('renderGroups', this.props); // NOCOMMIT
         if (!this.props.groups) return null;
 
-        return this.props.groups.map(group => this.renderGroup(group));
+        return this.props.groups.map(this.renderGroup);
     }
 
     renderBody() {
@@ -103,7 +112,7 @@ export default class AdminPermissions extends Component {
                     {this.renderTitle()}
                     {this.renderLeftNavPane()}
                 </div>
-                <div className="flex-column p4">
+                <div className="flex-column m4">
                     {this.renderBody()}
                 </div>
             </div>
